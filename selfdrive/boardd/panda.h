@@ -48,6 +48,8 @@ class Panda {
   std::mutex usb_lock;
   void handle_usb_issue(int err, const char func[]);
   void cleanup();
+  
+  static inline libusb_context *context = NULL;
 
  public:
   Panda(std::string serial="");

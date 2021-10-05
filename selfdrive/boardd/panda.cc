@@ -112,12 +112,13 @@ void Panda::cleanup() {
 std::vector<std::string> Panda::list() {
   // init libusb
   ssize_t num_devices;
-  libusb_context *context = NULL;
   libusb_device **dev_list = NULL;
   std::vector<std::string> serials;
 
-  int err = init_usb_ctx(context);
-  if (err != 0) { return serials; }
+  if (context == NULL) {
+    int err = init_usb_ctx(context);
+    if (err != 0) { return serials; }
+  }
 
   num_devices = libusb_get_device_list(context, &dev_list);
   if (num_devices < 0) {
