@@ -12,7 +12,12 @@
 #include "selfdrive/common/util.h"
 
 static int init_usb_ctx(libusb_context *context) {
-  int err = libusb_init(&context);
+  int err;
+  if (context != NULL) {
+    err = libusb_init(&context);
+  } else {
+    err = libusb_init(NULL);
+  }
   if (err != 0) {
     LOGE("libusb initialization error");
     return err;
@@ -115,12 +120,14 @@ std::vector<std::string> Panda::list() {
   libusb_device **dev_list = NULL;
   std::vector<std::string> serials;
 
-  if (context == NULL) {
-    int err = init_usb_ctx(context);
+  if (!default_context_initialized) {
+    LOGW("init default context");
+    int err = init_usb_ctx(NULL);
     if (err != 0) { return serials; }
+    default_context_initialized = true;
   }
 
-  num_devices = libusb_get_device_list(context, &dev_list);
+  num_devices = libusb_get_device_list(NULL, &dev_list);
   if (num_devices < 0) {
     LOGE("libusb can't get device list");
     goto finish;
@@ -144,9 +151,6 @@ std::vector<std::string> Panda::list() {
 finish:
   if (dev_list != NULL) {
     libusb_free_device_list(dev_list, 1);
-  }
-  if (context) {
-    libusb_exit(context);
   }
   return serials;
 }

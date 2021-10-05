@@ -49,7 +49,7 @@ class Panda {
   void handle_usb_issue(int err, const char func[]);
   void cleanup();
   
-  static inline libusb_context *context = NULL;
+  static inline bool default_context_initialized = false;
 
  public:
   Panda(std::string serial="");
